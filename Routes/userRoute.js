@@ -3,6 +3,7 @@ import {createUserController, getAllUserController, updateUserPasswordController
 import express from 'express';
 const userRoute = express.Router(); // get,put,post,delete
 
+
 userRoute.post('/signup', createUserController); 
 userRoute.get('/getusers', getAllUserController);
 userRoute.put('/updatepass/:id', updateUserPasswordController);

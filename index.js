@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import userRoute from "./Routes/userRoute.js";
+import authUserRoute from "./Routes/authUserRoute.js";
 
 dotenv.config();
 const app=express();
@@ -16,6 +17,7 @@ connectDB()
 // http://localhost:5000/api/user/signup
 
 app.use('/api/user', userRoute);
+app.use('/api/auth', authUserRoute);
 app.listen(PORT, () => {
     console.log(`Your server is running in ${PORT}`);
 })

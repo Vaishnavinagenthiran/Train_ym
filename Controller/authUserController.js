@@ -1,30 +1,28 @@
- import {hanspassword,password} from '../utils/hash.js'
- import {createToken} from '../utils/jwt.js'
+ import {hashPassword,passwordCheck} from '../utils/hash.js'
+ import {createToken} from '../utils/token.js'
 import AuthUserModel from '../Model/authUserModel.js'   
-export const userSignupController = async (req,res) => {
+import unserRoute from '../Routes/userRoute.js'
+
+
+export const authSignup = async (req,res) => {
     try {
         // password prem
         const {name,email,password,role} = req.body;
-        const checkEmail = await AuthUserModel.createUserModel({email});
+        const checkEmail = await AuthUserModel.createUserModel(email);
         if(checkEmail){
             return res.status(400).json({message:'email already exists'})
         }
 
         //hash password heloooo
         const newPassword = await hashPassword(password);
-        const ceateUser = await AuthUserModel.userSignupModel(
+        const id = await AuthUserModel.userSignupModel(
             {
-                name :name,
-                email:email,
+                name,
+                email,
                 password: newPassword,
-                role: role
+                role: role || "user"
             })
-            if(createUser){
-                res.status(201).json({message:"user had been created"});
-            }
-            else{
-                res.status(500).json({message:'user has not been created'})
-            }
+                res.status(201).json({message:"user had been created",userId: id});
 
     }catch (error) {
         return res.status(500).json({error : error.message})
@@ -37,10 +35,15 @@ export const authLogin = async (req,res) => {
         if(!user){
             return res.status(400).json({message:'invalid credentials'})
         }
-        const userPassword = await passwordCheck(password,user.password);
-        if(!userPassword){
+        const checkPassword = await passwordCheck(password,user.password);
+        if(!checkPassword){
             return res.status(400).json({message:'wrong password'})
     }
+    const token = createToken({
+        id : user.id,
+        role : user.role
+    })
+    res.status(200).json({ message: "login successfully",token })
     }catch (error) {
         return res.status(500).json({error : error.message})
     }
